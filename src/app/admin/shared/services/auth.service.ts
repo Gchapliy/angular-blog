@@ -6,7 +6,7 @@ import {environment} from '../../../../environments/environment';
 import {catchError, tap} from 'rxjs/operators';
 
 // {providedIn: 'root'} needs only when service must be in root module
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class AuthService {
   public error$: Subject<string> = new Subject<string>();
 
@@ -25,12 +25,12 @@ export class AuthService {
   }
 
   login(user: User): Observable<any> {
-    user.returnSecureToken = true
+    user.returnSecureToken = true;
     return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.apiKey}`, user)
       .pipe(
         tap(this.setToken),
         catchError(this.handleError.bind(this))
-      )
+      );
   }
 
   logout(): void {
@@ -42,21 +42,21 @@ export class AuthService {
   }
 
   private handleError(error: HttpErrorResponse) {
-    const {message} = error.error.error
+    const {message} = error.error.error;
 
     switch (message) {
       case 'INVALID_EMAIL':
-        this.error$.next("Wrong email");
+        this.error$.next('Wrong email');
         break;
       case 'INVALID_PASSWORD':
-        this.error$.next("Wrong password");
+        this.error$.next('Wrong password');
         break;
       case 'EMAIL_NOT_FOUND':
-        this.error$.next("Email not found");
+        this.error$.next('Email not found');
         break;
     }
 
-    return throwError(error)
+    return throwError(error);
   }
 
   private setToken(response: FbAuthResponse | null) {
